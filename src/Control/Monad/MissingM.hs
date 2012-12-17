@@ -41,13 +41,21 @@ findMapM f = foldr rec (return Nothing)
             then return mb
             else r
 
+-- | Split when the monadic predicate turns false.
+partitionM :: Monad m =>
+              (a -> m Bool)
+              -> [a]
+              -> m ([a], [a])
+partitionM f = partitionMapM keepi
+  where keepi e = ifM (f e) (return $ Just e) (return Nothing)
+
 -- | Take until the first non-Just result.
-spanMapM ::
+partitionMapM ::
   Monad m =>
   (a -> m (Maybe b))
   -> [a]
   -> m ([b], [a])
-spanMapM f = foldr rec empty . tails
+partitionMapM f = foldr rec empty . tails
   where empty = return ([], [])
         rec [] _ = empty
         rec xs@(x:_) mx = f x >>=
