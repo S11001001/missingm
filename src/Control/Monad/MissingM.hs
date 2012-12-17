@@ -41,6 +41,10 @@ findMapM f = foldr rec (return Nothing)
             then return mb
             else r
 
+-- | Take as many initial elements as satisfy the monadic predicate.
+spanM :: Monad m => (a -> m Bool) -> [a] -> m [a]
+spanM f = liftM fst . partitionM f
+
 -- | Split when the monadic predicate turns false.
 partitionM :: Monad m =>
               (a -> m Bool)
